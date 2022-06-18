@@ -3,9 +3,13 @@ import { Link } from 'react-router-dom';
 import CheckoutProduct from './CheckoutProduct';
  import './Payment.css'
 import { useStateValue } from './StateProvider'
+import {CardElement, useStripe,useElements} from "@stripe/react-stripe-js"
 
 function Payment() {
     const[{basket,user},dispatch]=useStateValue();
+//   react hook elements
+    const stripe=useStripe();
+  const elements=useElements();  
   return (
     <div className='payment'>
         <div className='payment__container'>
@@ -53,6 +57,10 @@ function Payment() {
             </div>
             <div className="payment__details">
                 {/* stripe magic will go */}
+
+                <form >
+                    <CardElement/>
+                </form>
               </div>
         </div>
 
