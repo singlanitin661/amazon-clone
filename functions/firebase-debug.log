@@ -252,3 +252,4 @@ Issues? Report them at https://github.com/firebase/firebase-tools/issues and att
 [debug] [2022-06-20T16:24:30.823Z] Got response from /__/functions.yaml {"endpoints":{"api":{"platform":"gcfv1","httpsTrigger":{},"entryPoint":"api"}},"specVersion":"v1alpha1","requiredAPIs":[]}
 [debug] [2022-06-20T16:24:30.858Z] shutdown requested via /__/quitquitquit
 
+[debug] [2022-06-20T16:52:42.426Z] File C:\Users\DELL\Desktop\amazon-clone\functions\index.js changed, reloading triggers {"metadata":{"emulator":{"name":"functions"},"message":"File C:\\Users\\DELL\\Desktop\\amazon-clone\\functions\\index.js changed, reloading triggers"}}
