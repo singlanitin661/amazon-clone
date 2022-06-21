@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link , useNavigate} from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import CheckoutProduct from "./CheckoutProduct";
 import "./Payment.css";
 import { useStateValue } from "./StateProvider";
@@ -7,7 +7,7 @@ import { CardElement, useStripe, useElements } from "@stripe/react-stripe-js";
 import CurrencyFormat from "react-currency-format";
 import { getBasketTotal } from "./reducer";
 import axios from "./axios";
-// import {db} from "./firebase"
+import {db} from "./firebase"
 function Payment() {
   const [{ basket, user }, dispatch] = useStateValue();
   const navigate = useNavigate();
@@ -23,44 +23,56 @@ function Payment() {
 
   useEffect(() => {
     const getClientSecret = async () => {
-        const response = await axios({
-            method: 'post',
-            url: `/payments/create?total=${getBasketTotal(basket) * 100}`
-        });
-        setClientSecret(response.data.clientSecret)
-    }
+      const response = await axios({
+        method: "post",
+        url: `/payments/create?total=${getBasketTotal(basket) * 100}`,
+      });
+      setClientSecret(response.data.clientSecret);
+    };
 
     getClientSecret();
-}, [basket])
+  }, [basket]);
 
-const handleSubmit = async (event) => {
-    // event.preventDefault();
-    // setProcessing(true);
+  const handleSubmit = async (event) => {
+    // do all the fancy stripe stuff...
+    event.preventDefault();
+    setProcessing(true);
 
-    // const payload = await stripe.confirmCardPayment(clientSecret, {
-    //     payment_method: {
-    //         card: elements.getElement(CardElement)
-    //     }
-    // }).then(({ paymentIntent }) => {
+    const payload = await stripe
+      .confirmCardPayment(clientSecret, {
+        payment_method: {
+          card: elements.getElement(CardElement),
+        },
+      })
+      .then(({ paymentIntent }) => {
+        // paymentIntent = payment confirmation
 
+        db.collection("users")
+          .doc(user?.uid)
+          .collection("orders")
+          .doc(paymentIntent.id)
+          .set({
+            basket: basket,
+            amount: paymentIntent.amount,
+            created: paymentIntent.created,
+          });
 
-    //     setSucceeded(true);
-    //     setError(null)
-    //     setProcessing(false)
+        setSucceeded(true);
+        setError(null);
+        setProcessing(false);
 
-    //     dispatch({
-    //         type: 'EMPTY_BASKET'
-    //     })
+        dispatch({
+          type: "EMPTY_BASKET",
+        });
 
-    //     navigate.replace('/orders')
-    // })
+        navigate.replace("/orders");
+      });
+  };
 
-}
-
-const handleChange = event => {
+  const handleChange = (event) => {
     setDisabled(event.empty);
     setError(event.error ? event.error.message : "");
-}
+  };
 
   return (
     <div className="payment">
